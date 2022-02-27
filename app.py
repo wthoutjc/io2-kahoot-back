@@ -66,7 +66,7 @@ def log_in():
                     'correo': student[3],
                     'proyecto': student[4],
                 }
-                access_token = create_access_token(identity=payload, expires_delta=datetime.timedelta(minutes=1)) #60
+                access_token = create_access_token(identity=payload, expires_delta=datetime.timedelta(minutes=10)) #60
                 return make_response(jsonify({"results": access_token}), 200)
             return make_response(jsonify({"results": student}), 500)
         return make_response(jsonify({"results": 'Usuario no ingresado'}), 500)
@@ -77,6 +77,32 @@ def log_in():
 def verify_jwt():
     print('verify-jwt')
     return make_response(jsonify({"results": ['Token válido', True] }), 200)
+
+@app.route("/registrar", methods=['POST'])
+def registrar():
+    print('registrar')
+    if request.method == 'POST':
+        data_raw = request.data.decode("utf-8")
+        json_data = json.loads(data_raw)
+        message, success = sql_op.registrar_usuario(json_data['newStudent'])
+        if success:
+            return make_response(jsonify({"results": message}), 200)
+        return make_response(jsonify({"results": message}), 500)
+    return make_response(jsonify({"results": 'Falló el procesamiento de la solicitud.'}), 500)
+
+@app.route("/actualizar", methods=['POST'])
+def actualizar():
+    print('actualizar')
+    if request.method == 'POST':
+        data_raw = request.data.decode("utf-8")
+        json_data = json.loads(data_raw)
+        id = json_data['id']
+        data = json_data['updateUser']
+        message, success = sql_op.actualizar_usuario(id, data)
+        if success:
+            return make_response(jsonify({"results": message}), 200)
+        return make_response(jsonify({"results": message}), 500)
+    return make_response(jsonify({"results": 'Falló el procesamiento de la solicitud.'}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

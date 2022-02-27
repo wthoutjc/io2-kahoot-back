@@ -69,3 +69,43 @@ class SQLOperations():
         except mysql.connector.Error as error:
             print('Consultar estudiante Error: ' + str(error))
             return ['Consultar estudiante Error: ', False]
+    
+    def registrar_usuario(self, data):
+        '''
+        Registrar un nuevo estudiante en el sistema
+        Args: Dicc
+            data = {
+                id,
+                nombre,
+                apellido,
+                correo,
+                proyecto
+            }
+        '''
+        try:
+            self.ncursor = self.login_database()
+            self.query = "INSERT INTO students VALUES (%s, %s, %s, %s, %s)"
+            self.ncursor.execute(self.query, (data['id'], data['nombre'], data['apellido'], data['correo'], data['proyecto']))
+            self.based.commit()
+            self.logout_database(self.ncursor)
+            return ['Estudiante registrado satisfactoriamente', True]
+        except mysql.connector.Error as error:
+            print('Registrar estudiante Error: ' + str(error))
+            return ['Registrar estudiante Error: ', False]
+    
+    def actualizar_usuario(self, id, data):
+        '''
+        Actualizar la información de un estudiante
+        Args: Dicc
+        '''
+        try:
+            self.ncursor = self.login_database()
+            self.ncursor.execute("SET SQL_SAFE_UPDATES = 0")
+            self.query = "UPDATE students SET k_students = %s, n_nombre = %s, n_apellido = %s, n_correo = %s, n_proyecto = %s WHERE k_students = %s"
+            self.ncursor.execute(self.query, (data['id'], data['nombre'], data['apellido'], data['correo'], data['proyecto'], id))
+            self.based.commit()
+            self.logout_database(self.ncursor)
+            return ['Información actualizada correctamente', True]
+        except mysql.connector.Error as error:
+            print('Actualizar estudiante Error: ' + str(error))
+            return ['Actualizar estudiante Error: ', False]
