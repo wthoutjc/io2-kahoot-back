@@ -2,13 +2,12 @@ USE `io-db`;
 
 SET FOREIGN_KEY_CHECKS=0;
 
-DROP TABLE IF EXISTS `users` CASCADE;
+DROP TABLE IF EXISTS `students` CASCADE;
 
 CREATE TABLE `students`(
 	`k_students` BIGINT NOT NULL,
 	`n_nombre` LONGTEXT NOT NULL,
 	`n_apellido` LONGTEXT NOT NULL,
-	`q_codigo` BIGINT NOT NULL,
 	`q_correo` LONGTEXT NOT NULL
 );
 

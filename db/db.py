@@ -109,3 +109,52 @@ class SQLOperations():
         except mysql.connector.Error as error:
             print('Actualizar estudiante Error: ' + str(error))
             return ['Actualizar estudiante Error: ', False]
+    
+    def insertar_calificacion(self, id, calificacion):
+        print(calificacion)
+        '''
+        Inserta la calificiación de un estudiante en la base de datos
+        SOLO SE PUEDE HACER 1 VEZ
+        Args
+            -id . INT codigo estudainte
+            -calificacion INT nota
+        '''
+        try:
+            # VERIFICAMOS QUE NO HAYA SIDO CALIFICADO ANTES
+            self.ncursor = self.login_database()
+            self.query = "SELECT * FROM calificacion WHERE k_students = %s"
+            self.ncursor.execute(self.query, (id,))
+            calificacion_ = self.ncursor.fetchone()
+            self.logout_database(self.ncursor)
+            if not calificacion_:
+                # Insertamos calificación
+                self.ncursor = self.login_database()
+                self.query = "INSERT INTO calificacion VALUES (%s, %s)"
+                self.ncursor.execute(self.query, (id, calificacion))
+                self.based.commit()
+                self.logout_database(self.ncursor)
+                return ['Calificación añadida satisfactoriamente', True]
+            return ['El estudiante ya ha sido calificado', False]
+        except mysql.connector.Error as error:
+            print('Insertar calificación Error: ' + str(error))
+            return ['Insertar calificación Error: ', False]
+
+    def consultar_calificacion(self, id):
+        '''
+        Consulta la calficacion de un estudiante
+        Args
+            id INT codigo
+        '''
+        try:
+            # VERIFICAMOS QUE NO HAYA SIDO CALIFICADO ANTES
+            self.ncursor = self.login_database()
+            self.query = "SELECT * FROM calificacion WHERE k_students = %s"
+            self.ncursor.execute(self.query, (id,))
+            calificacion = self.ncursor.fetchone()
+            self.logout_database(self.ncursor)
+            if calificacion:
+                return [calificacion, True]
+            return ['El estudiante no ha sido calificado', False]
+        except mysql.connector.Error as error:
+            print('Consultar calificación Error: ' + str(error))
+            return ['Consultar calificación Error: ', False]
