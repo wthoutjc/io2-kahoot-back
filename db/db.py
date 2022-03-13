@@ -139,6 +139,30 @@ class SQLOperations():
             print('Insertar calificación Error: ' + str(error))
             return ['Insertar calificación Error: ', False]
 
+    def insertar_respuestas(self, id_student, answers):
+        '''
+        Inserta las respuestas de cada estudiante
+        '''
+        try:
+            aux = 1
+            self.ncursor = self.login_database()
+            self.query = "INSERT INTO preguntas VALUES (%s,%s,%s,%s)"
+            if answers:
+                for answer in answers.values():
+                    if answer[0]:
+                        self.ncursor.execute(self.query, (id_student,aux,answer[0],answer[1]))
+                        self.based.commit()
+                        aux += 1
+                    else:
+                        self.ncursor.execute(self.query, (id_student,aux,0,0))
+                        self.based.commit()
+                        aux += 1
+            self.logout_database(self.ncursor)
+            return ['Calificación añadida satisfactoriamente', True]
+        except mysql.connector.Error as error:
+            print('Insertar respuesta Error: ' + str(error))
+            return ['Insertar respuesta Error: ', False]
+
     def consultar_calificacion(self, id):
         '''
         Consulta la calficacion de un estudiante
@@ -158,3 +182,20 @@ class SQLOperations():
         except mysql.connector.Error as error:
             print('Consultar calificación Error: ' + str(error))
             return ['Consultar calificación Error: ', False]
+    
+    def get_ranking(self):
+        '''
+        Devuelve el ranking de puntajes
+        '''
+        try:
+            self.ncursor = self.login_database()
+            self.query = "SELECT CONCAT(students.n_nombre,' ',students.n_apellido) AS nombre, calificacion.q_calificacion FROM students, calificacion WHERE students.k_students = calificacion.k_students ORDER BY q_calificacion DESC;"
+            self.ncursor.execute(self.query)
+            ranking = self.ncursor.fetchall()
+            self.logout_database(self.ncursor)
+            if ranking:
+                return [ranking, True]
+            return ['No se han registrado respuestas aún.', False]
+        except mysql.connector.Error as error:
+            print('Consultar ranking Error: ' + str(error))
+            return ['Consultar ranking Error: ', False]

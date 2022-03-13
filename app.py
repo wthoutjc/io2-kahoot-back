@@ -29,7 +29,7 @@ app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
 jwt = JWTManager(app)
 
 # Tiempo TOKEN
-TOKEN_EXP = 40
+TOKEN_EXP = 45
 
 # Sistema de calificaciones
 puntaje = Puntaje(TOKEN_EXP)
@@ -114,11 +114,16 @@ def answers():
     puntaje.set_id(id_student)
     puntaje.set_answers(answers)
 
+    print(answers)
+
     calificacion = puntaje.calificar()
 
     message, success = sql_op.insertar_calificacion(id_student, calificacion)
     if success:
-        return make_response(jsonify({"results": message}), 200)        
+        message_, success_ = sql_op.insertar_respuestas(id_student,answers)
+        if success_:
+            return make_response(jsonify({"results": message_}), 200)        
+        return make_response(jsonify({"results": message_}), 500)        
     return make_response(jsonify({"results": message}), 500)
 
 @app.route("/calificacion/<id>")
@@ -129,6 +134,14 @@ def calificacion(id):
     if success:
         return make_response(jsonify({"results": calificacion}), 200)
     return make_response(jsonify({"results": calificacion}), 500)
+
+@app.route("/ranking")
+def ranking():
+    print('ranking')
+    ranking , success = sql_op.get_ranking()
+    if success:
+        return make_response(jsonify({"results": ranking}), 200)
+    return make_response(jsonify({"results": ranking}), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

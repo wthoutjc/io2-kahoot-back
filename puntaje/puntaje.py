@@ -27,9 +27,12 @@ class Puntaje():
         en base al tiempo de respuesta
         '''
         # Iterar keys
+        print('CALIFICAR')
         if self.answers == None:
             return self.puntaje
+        self.puntaje = 0
         for keys in self.answers.items():
+            print(keys)
             #Question 1 - ANSWER C
             if keys[0] == 'question1':
                 # Respuesta correcta
